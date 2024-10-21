@@ -111,7 +111,10 @@ fun Screen1(navController: NavController) {
 
         (Button(
             onClick = {
-                navController.navigate("second_Screen")
+                navController.navigate("second_Screen/{start}".replace(
+                    oldValue = "{start}",
+                    newValue = sets.toString()
+                ))
             }
         ) {
             Text("Start Activity")
