@@ -40,14 +40,33 @@ fun HomeScreen(){
         composable("first_Screen") {
             Screen1(navController = navController)
         }
-        composable("second_Screen") {
-            Screen2(navController = navController)
+        composable(
+            route ="second_Screen/{start}",
+
+            ) {
+                backStackEntry ->
+            val start= backStackEntry.arguments?.getString("start")
+            if (start!= null) {
+                Screen2(navController = navController, start)
+            }
         }
-        composable("third_Screen") {
-            Screen3(navController = navController)
+        composable(route ="third_Screen/{work}",
+
+            ) {
+                backStackEntry ->
+            val work= backStackEntry.arguments?.getString("work")
+            if (work!= null) {
+                Screen3(navController = navController, work)
+            }
         }
-        composable("fourth_Screen") {
-            Screen4(navController = navController)
+        composable(route ="fourth_Screen/{rest}",
+
+            ) {
+                backStackEntry ->
+            val rest= backStackEntry.arguments?.getString("rest")
+            if (rest!= null) {
+                Screen4(navController = navController, rest)
+            }
         }
     }
 
@@ -104,7 +123,37 @@ fun Screen1(navController: NavController) {
 }
 
 @Composable
-fun Screen2(navController: NavController) {
+fun Screen2(navController: NavController, start: String?) {
+    var prepareTime by remember { mutableStateOf(10L) }
+    var setsRemaining by remember { mutableStateOf(5) }
+
+    LaunchedEffect(Unit) {
+        setsRemaining = start?.toInt() ?:0
+    }
+
+
+
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Text(text = "Sets Restantes $setsRemaining", fontSize = 30.sp)
+        Text(text = "Preparate para Trabajar en $prepareTime segundos", color = Color.Blue, fontSize = 25.sp)
+
+
+        if (prepareTime<=0) {
+            navController.navigate("third_Screen")
+        }
+    }
+
+}
+
+
+
+@Composable
+fun Screen3(navController: NavController, work: String?) {
     var setsRemaining by remember { mutableStateOf(0) }
     var workTime by remember { mutableStateOf(20L) }
     var restTime by remember { mutableStateOf(0L) }
@@ -113,8 +162,8 @@ fun Screen2(navController: NavController) {
     var workTimeSaved by remember { mutableStateOf(workTime) }
 
     LaunchedEffect(Unit) {
-        setsRemaining = 4
-        workTime = 20
+        setsRemaining = work?.toInt() ?:0
+        workTime = work?.toLong() ?: 0
         restTime = 10
         workTimeSaved = workTime
     }
@@ -161,46 +210,22 @@ fun Screen2(navController: NavController) {
         Button(onClick = {
             counter?.cancel()
             workTime = workTimeSaved
-            
-            
+
+
         }) {
             Text("Reiniciar")
         }
     }
 }
-
 @Composable
-fun Screen3(navController: NavController) {
-    var setsRemaining by remember { mutableStateOf(4) }
-    var workTime by remember { mutableStateOf(60L) }
+fun Screen4(navController: NavController, rest: String) {
+    var restTime by remember { mutableStateOf(0L) }
+    var setsRemaining by remember { mutableStateOf(0) }
 
-    LaunchedEffect(Unit) {
-        workTime = 20
-
-    }
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Text(text = "Sets Restantes $setsRemaining")
-        Text(text = "Tiempo de Trabajo", color = Color.Blue)
-
-
-        Button(onClick = {
-            navController.navigate("fourth_Screen")
-        }
-        ){
-            Text(text = "Cambiar Screen 4")
-        }
-    }
+LaunchedEffect(Unit) {
+    setsRemaining = rest?.toInt() ?: 0
+    restTime = restTime?.toLong() ?:0
 }
-@Composable
-fun Screen4(navController: NavController) {
-    var restTime by remember { mutableStateOf(10L) }
-    var setsRemaining by remember { mutableStateOf(4) }
-
-
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -211,9 +236,6 @@ fun Screen4(navController: NavController) {
         Text(text = "Tiempo de Descanso + $restTime", color = Color.Blue)
 
 
-
-        Button(onClick = {
-
             if (setsRemaining<=0) {
                 navController.navigate("first_Screen")
             }else{
@@ -221,11 +243,9 @@ fun Screen4(navController: NavController) {
                 navController.navigate("second_Screen")
             }
         }
-        ){
-            Text(text = "Continuar ejercicio")
-        }
+
     }
-}
+
 
 @Composable
 fun TimeSection(
