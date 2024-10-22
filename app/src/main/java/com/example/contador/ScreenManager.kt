@@ -2,6 +2,7 @@ package com.example.contador
 
 import android.os.CountDownTimer
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,12 +25,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.contador.ui.theme.*
+
 
 
 @Composable
@@ -82,7 +86,9 @@ fun Screen1(navController: NavController) {
     Column(
         Modifier
             .fillMaxSize()
+            .background(Color.LightGray)
             .padding(16.dp),
+
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -119,6 +125,13 @@ fun Screen1(navController: NavController) {
         ) {
             Text("Start Activity")
         })
+        Button(
+            onClick = {
+
+            }
+        ) {
+            Text("Save Presets")
+        }
 
 
     }
@@ -140,10 +153,16 @@ fun Screen2(navController: NavController, start: String?) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxSize()
+        modifier =Modifier
+            .fillMaxSize()
+            .background(color = BackgroundScreen2)
+            .padding(10.dp)
     ) {
-        Text(text = "Sets Restantes $setsRemaining", fontSize = 30.sp)
-        Text(text = "Preparate para Trabajar en $prepareTime segundos", color = Color.Blue, fontSize = 25.sp)
+        Text(text = "$setsRemaining Sets Restantes ", fontSize = 30.sp)
+        Spacer(modifier = Modifier.height(16.dp))
+        Text("$prepareTime", fontSize = 25.sp)
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(text = "¡PREPARATE!!!!", color = Color.DarkGray, fontSize = 45.sp, textDecoration = TextDecoration.Underline)
 
 
         if (prepareTime<=0) {
@@ -174,10 +193,13 @@ fun Screen3(navController: NavController, work: String?) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = BackgroundScreen3)
     ) {
         val timeLeft = if (currentScreen == "work") workTime else restTime
-        Text(text = "Sets Restantes $setsRemaining", fontSize = 30.sp)
+        Text(text = "$setsRemaining Sets Restantes ", fontSize = 30.sp)
+        Spacer(modifier = Modifier.height(16.dp))
         Text(text = "Tiempo restante: $timeLeft segundos", color = Color.Blue, fontSize = 20.sp)
 
         Button(onClick = {
@@ -193,7 +215,7 @@ fun Screen3(navController: NavController, work: String?) {
                 if (currentScreen == "work") {
                     currentScreen = "work"
                     if (timeLeft<=0){
-                        navController.navigate("third_Screen")
+                        navController.navigate("fourth_Screen")
                     }
 
                 }
@@ -233,9 +255,12 @@ LaunchedEffect(Unit) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = BackgroundScreen4)
     ) {
-        Text(text = "Sets Restantes $setsRemaining")
+        Text(text = "$setsRemaining Sets Restantes ", fontSize = 30.sp)
+        Spacer(modifier = Modifier.height(16.dp))
         Text(text = "Tiempo de Descanso + $restTime", color = Color.Blue)
 
 
