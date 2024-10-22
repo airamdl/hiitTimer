@@ -41,31 +41,37 @@ fun HomeScreen(){
             Screen1(navController = navController)
         }
         composable(
-            route ="second_Screen/{start}",
+            route ="second_Screen/{start}/{work}/{rest}",
 
             ) {
                 backStackEntry ->
             val start= backStackEntry.arguments?.getString("start")
-            if (start!= null) {
-                Screen2(navController = navController, start)
-            }
-        }
-        composable(route ="third_Screen/{work}",
-
-            ) {
-                backStackEntry ->
             val work= backStackEntry.arguments?.getString("work")
-            if (work!= null) {
-                Screen3(navController = navController, work)
+            val rest= backStackEntry.arguments?.getString("rest")
+            if (start!= null && work!= null && rest != null) {
+                Screen2(navController = navController, start,work,rest)
             }
         }
-        composable(route ="fourth_Screen/{rest}",
+        composable(route ="third_Screen/{start}/{work}/{rest}",
 
             ) {
                 backStackEntry ->
+            val start= backStackEntry.arguments?.getString("start")
+            val work= backStackEntry.arguments?.getString("work")
             val rest= backStackEntry.arguments?.getString("rest")
-            if (rest!= null) {
-                Screen4(navController = navController, rest)
+            if (start!= null && work!= null && rest != null) {
+                Screen3(navController = navController, start, work, rest)
+            }
+        }
+        composable(route ="fourth_Screen/{start}/{work}/{rest}",
+
+            ) {
+                backStackEntry ->
+            val start= backStackEntry.arguments?.getString("start")
+            val work= backStackEntry.arguments?.getString("work")
+            val rest= backStackEntry.arguments?.getString("rest")
+            if (start!= null && work!= null && rest != null) {
+                Screen4(navController = navController, start, work, rest)
             }
         }
     }
@@ -111,9 +117,15 @@ fun Screen1(navController: NavController) {
 
         (Button(
             onClick = {
-                navController.navigate("second_Screen/{start}".replace(
+                navController.navigate("second_Screen/{start}/{work}/{rest}".replace(
                     oldValue = "{start}",
                     newValue = sets.toString()
+                ).replace(
+                    oldValue = "{work}",
+                    newValue = work.toString()
+                ).replace(
+                    oldValue = "{rest}",
+                    newValue = rest.toString()
                 ))
             }
         ) {
@@ -126,17 +138,16 @@ fun Screen1(navController: NavController) {
 }
 
 @Composable
-fun Screen2(navController: NavController, start: String?) {
+fun Screen2(navController: NavController, start: String?, work: String?, rest: String?) {
     var prepareTime by remember { mutableStateOf(10L) }
-    var setsRemaining by remember { mutableStateOf(5) }
+    var setsRemaining by remember { mutableStateOf(start?.toInt() ?:0) }
+    var workRemaining by remember { mutableStateOf(work?.toInt() ?:0) }
+    var restRemaining by remember { mutableStateOf(rest?.toInt() ?:0) }
+    var miConterDown by remember{ mutableStateOf(CounterDown(10, {newvalue -> prepareTime = newvalue}))}
 
     LaunchedEffect(Unit) {
-        setsRemaining = start?.toInt() ?:0
+        miConterDown.start()
     }
-
-
-
-
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -144,10 +155,23 @@ fun Screen2(navController: NavController, start: String?) {
     ) {
         Text(text = "Sets Restantes $setsRemaining", fontSize = 30.sp)
         Text(text = "Preparate para Trabajar en $prepareTime segundos", color = Color.Blue, fontSize = 25.sp)
-
+        Button(onClick = {prepareTime=0}) { Text(text="prueba")}
 
         if (prepareTime<=0) {
-            navController.navigate("third_Screen")
+            LaunchedEffect(Unit) {
+                navController.navigate("third_Screen/{start}/{work}/{rest}".replace(
+                    oldValue = "{start}",
+                    newValue = setsRemaining.toString()
+                ).replace(
+                    oldValue = "{work}",
+                    newValue = workRemaining.toString()
+                ).replace(
+                    oldValue = "{rest}",
+                    newValue = restRemaining.toString()
+                ))
+            }
+            //miConterDown.cancel()
+
         }
     }
 
@@ -156,10 +180,10 @@ fun Screen2(navController: NavController, start: String?) {
 
 
 @Composable
-fun Screen3(navController: NavController, work: String?) {
-    var setsRemaining by remember { mutableStateOf(0) }
-    var workTime by remember { mutableStateOf(20L) }
-    var restTime by remember { mutableStateOf(0L) }
+fun Screen3(navController: NavController, start: String?, work: String?, rest: String?) {
+    var setsRemaining by remember { mutableStateOf(start?.toInt() ?:0) }
+    var workTime by remember { mutableStateOf(work?.toLong() ?:0) }
+    var restTime by remember { mutableStateOf(rest?.toLong() ?:0) }
     var counter by remember { mutableStateOf<CounterDown?>(null) }
     var currentScreen by remember { mutableStateOf("work") }
     var workTimeSaved by remember { mutableStateOf(workTime) }
@@ -192,9 +216,7 @@ fun Screen3(navController: NavController, work: String?) {
                 counter?.start()
                 if (currentScreen == "work") {
                     currentScreen = "work"
-                    if (timeLeft<=0){
-                        navController.navigate("third_Screen")
-                    }
+
 
                 }
 
@@ -202,6 +224,13 @@ fun Screen3(navController: NavController, work: String?) {
         }
         ) {
             Text("Iniciar Temporizador")
+        }
+        if (timeLeft<=0){
+            LaunchedEffect(Unit) {
+                navController.navigate("fourth_Screen/{rest}".replace(
+                    oldValue = "{rest}",
+                    newValue = restTime.toString()
+                ))}
         }
 
         Button(onClick = {
@@ -221,7 +250,7 @@ fun Screen3(navController: NavController, work: String?) {
     }
 }
 @Composable
-fun Screen4(navController: NavController, rest: String) {
+fun Screen4(navController: NavController, start: String?, work: String?, rest: String?) {
     var restTime by remember { mutableStateOf(0L) }
     var setsRemaining by remember { mutableStateOf(0) }
 
@@ -237,13 +266,21 @@ LaunchedEffect(Unit) {
     ) {
         Text(text = "Sets Restantes $setsRemaining")
         Text(text = "Tiempo de Descanso + $restTime", color = Color.Blue)
-
+        Log.i("DAM2",restTime.toString())
 
             if (setsRemaining<=0) {
+                LaunchedEffect(Unit) {
                 navController.navigate("first_Screen")
+                    }
             }else{
+                if (restTime>10){
+
+                LaunchedEffect(Unit) {
                 setsRemaining -= 1
-                navController.navigate("second_Screen")
+                navController.navigate("second_Screen/{start}".replace(
+                    oldValue = "{start}",
+                    newValue = setsRemaining.toString()
+                ))}}
             }
         }
 
