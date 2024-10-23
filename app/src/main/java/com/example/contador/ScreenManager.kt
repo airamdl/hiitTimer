@@ -86,6 +86,7 @@ fun checkSettings(set : Int, work : Int, rest : Int): Boolean {
 // Screen Settings
 @Composable
 fun Screen1(navController: NavController) {
+    // Defaults values
     var sets by rememberSaveable { mutableIntStateOf(4) }
     var work by rememberSaveable { mutableIntStateOf(5) }
     var rest by rememberSaveable { mutableIntStateOf(10) }
@@ -162,7 +163,6 @@ fun Screen2(navController: NavController, start: String?, work: String?, rest: S
     ) {
         Text(text = "Sets Restantes $sets", fontSize = 30.sp)
         Text(text = "Preparate para Trabajar en $prepareTime segundos", color = Color.Blue, fontSize = 25.sp)
-        Button(onClick = {prepareTime=0}) { Text(text="prueba")}
 
         if (prepareTime<=0) {
             LaunchedEffect(Unit) {
@@ -193,11 +193,14 @@ fun Screen3(navController: NavController, start: String?, work: String?, rest: S
     var restTime by remember { mutableStateOf(rest?.toLong() ?:0) }
     var counter by remember { mutableStateOf<CounterDown?>(null) }
     var currentScreen by remember { mutableStateOf("work") }
+    var buttonInitOrPause by remember { mutableStateOf("Pausar") }
     var workTimeSaved by remember { mutableStateOf(workTime) }
 
     LaunchedEffect(Unit) {
         setsRemaining = start?.toInt() ?:0
         workTimeSaved = workTime
+        counter = CounterDown(work?.toLong() ?: 10, { newvalue -> workTime = newvalue})
+        counter?.start()
     }
 
     Column(
@@ -209,27 +212,6 @@ fun Screen3(navController: NavController, start: String?, work: String?, rest: S
         Text(text = "Sets Restantes $setsRemaining", fontSize = 30.sp)
         Text(text = "Tiempo restante: $timeLeft segundos", color = Color.Blue, fontSize = 20.sp)
 
-        Button(onClick = {
-            if (setsRemaining > 0) {
-                counter = CounterDown(timeLeft) { remaining ->
-                    if (currentScreen == "work") {
-                        workTime = remaining
-                    } else {
-                        restTime = remaining
-                    }
-                }
-                counter?.start()
-                if (currentScreen == "work") {
-                    currentScreen = "work"
-
-
-                }
-
-            }
-        }
-        ) {
-            Text("Iniciar Temporizador")
-        }
         if (timeLeft<=0){
             LaunchedEffect(Unit) {
                 navController.navigate("fourth_Screen/{start}/{work}/{rest}".replace(
@@ -245,9 +227,31 @@ fun Screen3(navController: NavController, start: String?, work: String?, rest: S
         }
 
         Button(onClick = {
-            counter?.cancel()
+            if (counter?.counterState == false){
+                buttonInitOrPause = "Pausar"
+                if (setsRemaining > 0) {
+                    counter = CounterDown(timeLeft) { remaining ->
+                        if (currentScreen == "work") {
+                            workTime = remaining
+                        } else {
+                            restTime = remaining
+                        }
+                    }
+                    counter?.start()
+                    if (currentScreen == "work") {
+                        currentScreen = "work"
+
+
+                    }
+
+                }
+            }else{
+                buttonInitOrPause = "Reanudar"
+                counter?.cancel()
+            }
+
         }) {
-            Text("Pausar")
+            Text(text = buttonInitOrPause)
         }
 
         Button(onClick = {
@@ -276,8 +280,8 @@ fun Screen4(navController: NavController, start: String?, work: String?, rest: S
         verticalArrangement = Arrangement.Center,
         modifier = Modifier.fillMaxSize()
     ) {
-        Text(text = "Sets Restantes $setsRemaining")
-        Text(text = "Tiempo de Descanso: $restTime", color = Color.Blue)
+        Text(text = "Sets Restantes $setsRemaining",fontSize = 30.sp)
+        Text(text = "Tiempo de Descanso: $restTime", color = Color.Blue, fontSize = 20.sp)
 
             if (setsRemaining<=0) {
                 LaunchedEffect(Unit) {
@@ -330,7 +334,7 @@ fun TimeSection(
     }}
 
 class CounterDown(var segundos: Long, var loquehacealhacertick: (Long) -> Unit) {
-    private var counterState: Boolean = false
+    var counterState: Boolean = false
 
     private val myCounter = object : CountDownTimer((segundos * 1000L), 1000) {
         override fun onTick(millisUntilFinished: Long) {
