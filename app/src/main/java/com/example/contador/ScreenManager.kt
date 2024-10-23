@@ -25,6 +25,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -158,12 +160,17 @@ fun Screen2(navController: NavController, start: String?) {
             .background(color = BackgroundScreen2)
             .padding(10.dp)
     ) {
-        Text(text = "$setsRemaining Sets Restantes ", fontSize = 30.sp)
+        Text(text = "$setsRemaining Sets Restantes ", fontSize = 30.sp, fontStyle = FontStyle.Italic)
         Spacer(modifier = Modifier.height(16.dp))
-        Text("$prepareTime", fontSize = 25.sp)
+        Text("$prepareTime", fontSize = 30.sp, fontStyle = FontStyle.Italic, fontFamily = FontFamily.Monospace)
         Spacer(modifier = Modifier.height(16.dp))
-        Text(text = "¡PREPARATE!!!!", color = Color.DarkGray, fontSize = 45.sp, textDecoration = TextDecoration.Underline)
+        Text(text = "¡PREPARATE!!", color = Color.DarkGray, fontSize = 45.sp, textDecoration = TextDecoration.Underline, fontStyle = FontStyle.Italic, fontFamily = FontFamily.Monospace)
 
+        Button(onClick = {
+        navController.navigate("third_Screen")}
+        ) {
+
+        }
 
         if (prepareTime<=0) {
             navController.navigate("third_Screen")
@@ -200,7 +207,9 @@ fun Screen3(navController: NavController, work: String?) {
         val timeLeft = if (currentScreen == "work") workTime else restTime
         Text(text = "$setsRemaining Sets Restantes ", fontSize = 30.sp)
         Spacer(modifier = Modifier.height(16.dp))
-        Text(text = "Tiempo restante: $timeLeft segundos", color = Color.Blue, fontSize = 20.sp)
+        Text(text = "$timeLeft",  fontSize = 30.sp)
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(text = "Tiempo restante ", color = Color.Blue, fontSize = 20.sp)
 
         Button(onClick = {
             if (setsRemaining > 0) {
@@ -261,10 +270,14 @@ LaunchedEffect(Unit) {
     ) {
         Text(text = "$setsRemaining Sets Restantes ", fontSize = 30.sp)
         Spacer(modifier = Modifier.height(16.dp))
-        Text(text = "Tiempo de Descanso + $restTime", color = Color.Blue)
+        Text(text = "$restTime" )
+        Text(text = "Tiempo de Descanso", color = Color.Blue)
+
+        Text(text = "Preparate", fontSize = 30.sp)
 
 
-            if (setsRemaining<=0) {
+
+        if (setsRemaining<=0) {
                 navController.navigate("first_Screen")
             }else{
                 setsRemaining -= 1
