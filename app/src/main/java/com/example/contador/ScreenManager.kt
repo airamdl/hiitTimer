@@ -77,12 +77,17 @@ fun HomeScreen(){
     }
 
 }
-
+fun checkSettings(set : Int, work : Int, rest : Int): Boolean {
+    if (set != 0 && work != 0 && rest != 0){
+        return true
+    }
+    return false
+}
 // Screen Settings
 @Composable
 fun Screen1(navController: NavController) {
     var sets by rememberSaveable { mutableIntStateOf(4) }
-    var work by rememberSaveable { mutableIntStateOf(20) }
+    var work by rememberSaveable { mutableIntStateOf(5) }
     var rest by rememberSaveable { mutableIntStateOf(10) }
 
     Column(
@@ -117,16 +122,20 @@ fun Screen1(navController: NavController) {
 
         (Button(
             onClick = {
-                navController.navigate("second_Screen/{start}/{work}/{rest}".replace(
-                    oldValue = "{start}",
-                    newValue = sets.toString()
-                ).replace(
-                    oldValue = "{work}",
-                    newValue = work.toString()
-                ).replace(
-                    oldValue = "{rest}",
-                    newValue = rest.toString()
-                ))
+                if (checkSettings(sets,work,rest) == true) {
+                    navController.navigate(
+                        "second_Screen/{start}/{work}/{rest}".replace(
+                            oldValue = "{start}",
+                            newValue = sets.toString()
+                        ).replace(
+                            oldValue = "{work}",
+                            newValue = work.toString()
+                        ).replace(
+                            oldValue = "{rest}",
+                            newValue = rest.toString()
+                        )
+                    )
+                }
             }
         ) {
             Text("Start Activity")
