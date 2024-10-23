@@ -166,12 +166,6 @@ fun Screen2(navController: NavController, start: String?) {
         Spacer(modifier = Modifier.height(16.dp))
         Text(text = "¡PREPARATE!!", color = Color.DarkGray, fontSize = 45.sp, textDecoration = TextDecoration.Underline, fontStyle = FontStyle.Italic, fontFamily = FontFamily.Monospace)
 
-        Button(onClick = {
-        navController.navigate("third_Screen")}
-        ) {
-
-        }
-
         if (prepareTime<=0) {
             navController.navigate("third_Screen")
         }
