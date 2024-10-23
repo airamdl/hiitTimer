@@ -78,7 +78,7 @@ fun HomeScreen(){
 
 }
 
-
+// Screen Settings
 @Composable
 fun Screen1(navController: NavController) {
     var sets by rememberSaveable { mutableIntStateOf(4) }
@@ -136,13 +136,11 @@ fun Screen1(navController: NavController) {
     }
 
 }
-
+//Screen 10 second
 @Composable
 fun Screen2(navController: NavController, start: String?, work: String?, rest: String?) {
     var prepareTime by remember { mutableStateOf(10L) }
-    var setsRemaining by remember { mutableStateOf(start?.toInt() ?:0) }
-    var workRemaining by remember { mutableStateOf(work?.toInt() ?:0) }
-    var restRemaining by remember { mutableStateOf(rest?.toInt() ?:0) }
+    var sets by remember { mutableStateOf(start?.toInt() ?:0) }
     var miConterDown by remember{ mutableStateOf(CounterDown(10, {newvalue -> prepareTime = newvalue}))}
 
     LaunchedEffect(Unit) {
@@ -153,7 +151,7 @@ fun Screen2(navController: NavController, start: String?, work: String?, rest: S
         verticalArrangement = Arrangement.Center,
         modifier = Modifier.fillMaxSize()
     ) {
-        Text(text = "Sets Restantes $setsRemaining", fontSize = 30.sp)
+        Text(text = "Sets Restantes $sets", fontSize = 30.sp)
         Text(text = "Preparate para Trabajar en $prepareTime segundos", color = Color.Blue, fontSize = 25.sp)
         Button(onClick = {prepareTime=0}) { Text(text="prueba")}
 
@@ -161,13 +159,13 @@ fun Screen2(navController: NavController, start: String?, work: String?, rest: S
             LaunchedEffect(Unit) {
                 navController.navigate("third_Screen/{start}/{work}/{rest}".replace(
                     oldValue = "{start}",
-                    newValue = setsRemaining.toString()
+                    newValue = sets.toString()
                 ).replace(
                     oldValue = "{work}",
-                    newValue = workRemaining.toString()
+                    newValue = work.toString()
                 ).replace(
                     oldValue = "{rest}",
-                    newValue = restRemaining.toString()
+                    newValue = rest.toString()
                 ))
             }
             //miConterDown.cancel()
@@ -178,7 +176,7 @@ fun Screen2(navController: NavController, start: String?, work: String?, rest: S
 }
 
 
-
+//Work's screen
 @Composable
 fun Screen3(navController: NavController, start: String?, work: String?, rest: String?) {
     var setsRemaining by remember { mutableStateOf(start?.toInt() ?:0) }
@@ -189,9 +187,7 @@ fun Screen3(navController: NavController, start: String?, work: String?, rest: S
     var workTimeSaved by remember { mutableStateOf(workTime) }
 
     LaunchedEffect(Unit) {
-        setsRemaining = work?.toInt() ?:0
-        workTime = work?.toLong() ?: 0
-        restTime = 10
+        setsRemaining = start?.toInt() ?:0
         workTimeSaved = workTime
     }
 
@@ -227,9 +223,15 @@ fun Screen3(navController: NavController, start: String?, work: String?, rest: S
         }
         if (timeLeft<=0){
             LaunchedEffect(Unit) {
-                navController.navigate("fourth_Screen/{rest}".replace(
+                navController.navigate("fourth_Screen/{start}/{work}/{rest}".replace(
+                    oldValue = "{start}",
+                    newValue = start.toString()
+                ).replace(
+                    oldValue = "{work}",
+                    newValue = work.toString()
+                ).replace(
                     oldValue = "{rest}",
-                    newValue = restTime.toString()
+                    newValue = rest.toString()
                 ))}
         }
 
@@ -249,15 +251,16 @@ fun Screen3(navController: NavController, start: String?, work: String?, rest: S
         }
     }
 }
+// Rest's screen
 @Composable
 fun Screen4(navController: NavController, start: String?, work: String?, rest: String?) {
-    var restTime by remember { mutableStateOf(0L) }
-    var setsRemaining by remember { mutableStateOf(0) }
+    var restTime by remember { mutableStateOf(rest?.toLong() ?: 0) }
+    var setsRemaining by remember { mutableStateOf(start?.toInt() ?: 0) }
 
-LaunchedEffect(Unit) {
-    setsRemaining = rest?.toInt() ?: 0
-    restTime = restTime?.toLong() ?:0
-}
+//LaunchedEffect(Unit) {
+//    setsRemaining = start?.toInt() ?: 0
+//    restTime = restTime?.toLong() ?:0
+//}
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -266,9 +269,8 @@ LaunchedEffect(Unit) {
     ) {
         Text(text = "Sets Restantes $setsRemaining")
         Text(text = "Tiempo de Descanso + $restTime", color = Color.Blue)
-        Log.i("DAM2",restTime.toString())
 
-            if (setsRemaining<=0) {
+            if (restTime<=0) {
                 LaunchedEffect(Unit) {
                 navController.navigate("first_Screen")
                     }
@@ -277,10 +279,17 @@ LaunchedEffect(Unit) {
 
                 LaunchedEffect(Unit) {
                 setsRemaining -= 1
-                navController.navigate("second_Screen/{start}".replace(
-                    oldValue = "{start}",
-                    newValue = setsRemaining.toString()
-                ))}}
+                    navController.navigate("second_Screen/{start}/{work}/{rest}".replace(
+                        oldValue = "{start}",
+                        newValue = start.toString()
+                    ).replace(
+                        oldValue = "{work}",
+                        newValue = work.toString()
+                    ).replace(
+                        oldValue = "{rest}",
+                        newValue = rest.toString()
+                    ))
+                              }}
             }
         }
 
