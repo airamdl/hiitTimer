@@ -11,7 +11,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -35,7 +41,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.contador.ui.theme.*
-
+import java.time.format.TextStyle
 
 
 @Composable
@@ -88,7 +94,7 @@ fun Screen1(navController: NavController) {
     Column(
         Modifier
             .fillMaxSize()
-            .background(Color.LightGray)
+            .background(color = BacgorundScreen1)
             .padding(16.dp),
 
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -123,16 +129,24 @@ fun Screen1(navController: NavController) {
                     oldValue = "{start}",
                     newValue = sets.toString()
                 ))
-            }
+            },
+            colors = ButtonDefaults.buttonColors(Color.Black),
+            shape = RoundedCornerShape(topEnd = 0.dp, topStart = 10.dp, bottomEnd = 10.dp)
+
+
         ) {
             Text("Start Activity")
+
         })
         Button(
             onClick = {
 
-            }
+            },
+            colors = ButtonDefaults.buttonColors(Color.Black),
+            shape = RoundedCornerShape(topEnd = 0.dp, topStart = 10.dp, bottomEnd = 10.dp)
         ) {
             Text("Save Presets")
+            Icon(imageVector = Icons.Filled.Add, contentDescription = null)
         }
 
 
@@ -159,13 +173,19 @@ fun Screen2(navController: NavController, start: String?) {
             .fillMaxSize()
             .background(color = BackgroundScreen2)
             .padding(10.dp)
-    ) {
-        Text(text = "$setsRemaining Sets Restantes ", fontSize = 30.sp, fontStyle = FontStyle.Italic)
-        Spacer(modifier = Modifier.height(16.dp))
-        Text("$prepareTime", fontSize = 30.sp, fontStyle = FontStyle.Italic, fontFamily = FontFamily.Monospace)
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(text = "¡PREPARATE!!", color = Color.DarkGray, fontSize = 45.sp, textDecoration = TextDecoration.Underline, fontStyle = FontStyle.Italic, fontFamily = FontFamily.Monospace)
 
+    ) {
+        Text(text = "$setsRemaining Sets Restantes ", fontSize = 30.sp, fontStyle = FontStyle.Italic , fontWeight = FontWeight.SemiBold)
+        Spacer(modifier = Modifier.height(16.dp))
+        Text("$prepareTime", fontSize = 30.sp, fontStyle = FontStyle.Italic, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(text = "¡PREPARATE!!", color = TextScreen2, fontWeight = FontWeight.Bold, fontSize = 45.sp, textDecoration = TextDecoration.Underline, fontStyle = FontStyle.Italic, fontFamily = FontFamily.Monospace)
+//        Text(text = "hola", textStyle = MaterialTheme.typography.bodyMedium.copy(
+//            fontSize = 16.sp,
+//            lineHeight = 24.sp,
+//            color =  Color.Black,
+//            fontWeight = FontWeight.Bold
+//        ))
         if (prepareTime<=0) {
             navController.navigate("third_Screen")
         }
@@ -204,6 +224,7 @@ fun Screen3(navController: NavController, work: String?) {
         Text(text = "$timeLeft",  fontSize = 30.sp)
         Spacer(modifier = Modifier.height(16.dp))
         Text(text = "Tiempo restante ", color = Color.Blue, fontSize = 20.sp)
+        Text(text = "VAMOS TU PUEDES", color = TestScreen3, fontSize = 40.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace)
 
         Button(onClick = {
             if (setsRemaining > 0) {
@@ -265,9 +286,8 @@ LaunchedEffect(Unit) {
         Text(text = "$setsRemaining Sets Restantes ", fontSize = 30.sp)
         Spacer(modifier = Modifier.height(16.dp))
         Text(text = "$restTime" )
-        Text(text = "Tiempo de Descanso", color = Color.Blue)
+        Text(text = "Descansa", fontSize = 45.sp, fontWeight = FontWeight.Bold, color = TextScreen4)
 
-        Text(text = "Preparate", fontSize = 30.sp)
 
 
 
@@ -292,16 +312,28 @@ fun TimeSection(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = label, style = MaterialTheme.typography.titleLarge)
+        Text(text = label, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(8.dp))
 
-        Text(text = "$time", style = MaterialTheme.typography.bodyMedium)
+        Text(text = "$time", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
         Spacer(modifier = Modifier.height(8.dp))
 
         Row {
-            Button(onClick = onDecrease) { Text(text = "-") }
+            Button(
+                onClick = onDecrease,
+                colors = ButtonDefaults.buttonColors(Color.DarkGray),
+                shape = RoundedCornerShape(topEnd = 0.dp, topStart = 10.dp, bottomEnd = 20.dp)
+
+            ) {
+                Text(text = "-", fontSize = 20.sp, fontWeight = FontWeight.Bold )
+
+            }
             Spacer(modifier = Modifier.width(16.dp))
-            Button(onClick = onIncrease) { Text(text = "+") }
+            Button(
+                onClick = onIncrease,
+                colors = ButtonDefaults.buttonColors(Color.DarkGray),
+                shape = RoundedCornerShape(topEnd = 0.dp, topStart = 10.dp, bottomEnd = 20.dp)
+            ) { Text(text = "+", fontWeight = FontWeight.Bold ) }
 
         }
 
