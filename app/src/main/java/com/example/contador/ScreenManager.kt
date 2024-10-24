@@ -38,6 +38,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.contador.ui.theme.*
+import android.media.MediaPlayer
+import androidx.compose.ui.platform.LocalContext
 import java.time.format.TextStyle
 
 
@@ -99,6 +101,8 @@ fun Screen1(navController: NavController) {
     var sets by rememberSaveable { mutableIntStateOf(4) }
     var work by rememberSaveable { mutableIntStateOf(5) }
     var rest by rememberSaveable { mutableIntStateOf(10) }
+    var nplayer : MediaPlayer
+    val myContext = LocalContext.current
 
     Column(
         Modifier
@@ -148,6 +152,8 @@ fun Screen1(navController: NavController) {
                         )
                     )
                 }
+                nplayer = MediaPlayer.create(myContext, R.raw.noti);
+                nplayer.start()
             }
         ) {
             Text("Start Activity")
@@ -183,7 +189,7 @@ fun Screen2(navController: NavController, start: String?, work: String?, rest: S
         Spacer(modifier = Modifier.height(16.dp))
         Text("$prepareTime", fontSize = 30.sp, fontStyle = FontStyle.Italic, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(16.dp))
-        Text(text = "¡PREPARATE!!", color = TextScreen2, fontWeight = FontWeight.Bold, fontSize = 45.sp, textDecoration = TextDecoration.Underline, fontStyle = FontStyle.Italic, fontFamily = FontFamily.Monospace)
+        Text(text = "¡¡PREPÁRATE!!", color = TextScreen2, fontWeight = FontWeight.Bold, fontSize = 45.sp, textDecoration = TextDecoration.Underline, fontStyle = FontStyle.Italic, fontFamily = FontFamily.Monospace)
 //        Text(text = "hola", textStyle = MaterialTheme.typography.bodyMedium.copy(
 //            fontSize = 16.sp,
 //            lineHeight = 24.sp,
@@ -242,7 +248,7 @@ fun Screen3(navController: NavController, start: String?, work: String?, rest: S
         Text(text = "$timeLeft",  fontSize = 30.sp)
         Spacer(modifier = Modifier.height(16.dp))
         Text(text = "Tiempo restante ", color = Color.Blue, fontSize = 20.sp)
-        Text(text = "VAMOS TU PUEDES", color = TestScreen3, fontSize = 40.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace)
+        Text(text = "¡VAMOS TÚ PUEDES!", color = TestScreen3, fontSize = 40.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace)
 
         if (timeLeft<=0){
             LaunchedEffect(Unit) {
@@ -306,7 +312,7 @@ fun Screen4(navController: NavController, start: String?, work: String?, rest: S
     ) {
         Text(text = "$setsRemaining Sets Restantes ", fontSize = 30.sp)
         Spacer(modifier = Modifier.height(16.dp))
-        Text(text = "$restTime" )
+        Text(text = "$restTime", fontSize = 20.sp )
         Text(text = "Descansa", fontSize = 45.sp, fontWeight = FontWeight.Bold, color = TextScreen4)
 
 
