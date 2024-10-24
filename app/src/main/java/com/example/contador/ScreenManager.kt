@@ -2,6 +2,7 @@ package com.example.contador
 
 import android.os.CountDownTimer
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,7 +11,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,12 +27,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.contador.ui.theme.*
+import java.time.format.TextStyle
 
 
 @Composable
@@ -94,7 +103,9 @@ fun Screen1(navController: NavController) {
     Column(
         Modifier
             .fillMaxSize()
+            .background(color = BacgorundScreen1)
             .padding(16.dp),
+
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -156,14 +167,29 @@ fun Screen2(navController: NavController, start: String?, work: String?, rest: S
     LaunchedEffect(Unit) {
         miConterDown.start()
     }
+
+
+
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Text(text = "Sets Restantes $sets", fontSize = 30.sp)
-        Text(text = "Preparate para Trabajar en $prepareTime segundos", color = Color.Blue, fontSize = 25.sp)
-
+        modifier =Modifier
+            .fillMaxSize()
+            .background(color = BackgroundScreen2)
+            .padding(10.dp)
+    ){
+        Text(text = "$sets Sets Restantes ", fontSize = 30.sp, fontStyle = FontStyle.Italic , fontWeight = FontWeight.SemiBold)
+        Spacer(modifier = Modifier.height(16.dp))
+        Text("$prepareTime", fontSize = 30.sp, fontStyle = FontStyle.Italic, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(text = "¡PREPARATE!!", color = TextScreen2, fontWeight = FontWeight.Bold, fontSize = 45.sp, textDecoration = TextDecoration.Underline, fontStyle = FontStyle.Italic, fontFamily = FontFamily.Monospace)
+//        Text(text = "hola", textStyle = MaterialTheme.typography.bodyMedium.copy(
+//            fontSize = 16.sp,
+//            lineHeight = 24.sp,
+//            color =  Color.Black,
+//            fontWeight = FontWeight.Bold
+//        ))
         if (prepareTime<=0) {
             LaunchedEffect(Unit) {
                 navController.navigate("third_Screen/{start}/{work}/{rest}".replace(
@@ -206,11 +232,17 @@ fun Screen3(navController: NavController, start: String?, work: String?, rest: S
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = BackgroundScreen3)
     ) {
         val timeLeft = if (currentScreen == "work") workTime else restTime
-        Text(text = "Sets Restantes $setsRemaining", fontSize = 30.sp)
-        Text(text = "Tiempo restante: $timeLeft segundos", color = Color.Blue, fontSize = 20.sp)
+        Text(text = "$setsRemaining Sets Restantes ", fontSize = 30.sp)
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(text = "$timeLeft",  fontSize = 30.sp)
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(text = "Tiempo restante ", color = Color.Blue, fontSize = 20.sp)
+        Text(text = "VAMOS TU PUEDES", color = TestScreen3, fontSize = 40.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace)
 
         if (timeLeft<=0){
             LaunchedEffect(Unit) {
@@ -268,10 +300,17 @@ fun Screen4(navController: NavController, start: String?, work: String?, rest: S
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = BackgroundScreen4)
     ) {
-        Text(text = "Sets Restantes $setsRemaining",fontSize = 30.sp)
-        Text(text = "Tiempo de Descanso: $restTime", color = Color.Blue, fontSize = 20.sp)
+        Text(text = "$setsRemaining Sets Restantes ", fontSize = 30.sp)
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(text = "$restTime" )
+        Text(text = "Descansa", fontSize = 45.sp, fontWeight = FontWeight.Bold, color = TextScreen4)
+
+
+
 
             if (setsRemaining<=0) {
                 LaunchedEffect(Unit) {
@@ -308,16 +347,28 @@ fun TimeSection(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = label, style = MaterialTheme.typography.titleLarge)
+        Text(text = label, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(8.dp))
 
-        Text(text = "$time", style = MaterialTheme.typography.bodyMedium)
+        Text(text = "$time", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
         Spacer(modifier = Modifier.height(8.dp))
 
         Row {
-            Button(onClick = onDecrease) { Text(text = "-") }
+            Button(
+                onClick = onDecrease,
+                colors = ButtonDefaults.buttonColors(Color.DarkGray),
+                shape = RoundedCornerShape(topEnd = 0.dp, topStart = 10.dp, bottomEnd = 20.dp)
+
+            ) {
+                Text(text = "-", fontSize = 20.sp, fontWeight = FontWeight.Bold )
+
+            }
             Spacer(modifier = Modifier.width(16.dp))
-            Button(onClick = onIncrease) { Text(text = "+") }
+            Button(
+                onClick = onIncrease,
+                colors = ButtonDefaults.buttonColors(Color.DarkGray),
+                shape = RoundedCornerShape(topEnd = 0.dp, topStart = 10.dp, bottomEnd = 20.dp)
+            ) { Text(text = "+", fontWeight = FontWeight.Bold ) }
 
         }
 
