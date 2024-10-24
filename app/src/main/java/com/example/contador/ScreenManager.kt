@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -131,7 +132,7 @@ fun Screen1(navController: NavController) {
                 ))
             },
             colors = ButtonDefaults.buttonColors(Color.Black),
-            shape = RoundedCornerShape(topEnd = 0.dp, topStart = 10.dp, bottomEnd = 10.dp)
+            shape = RoundedCornerShape(topEnd = 0.dp, topStart = 10.dp, bottomEnd = 20.dp)
 
 
         ) {
@@ -143,10 +144,10 @@ fun Screen1(navController: NavController) {
 
             },
             colors = ButtonDefaults.buttonColors(Color.Black),
-            shape = RoundedCornerShape(topEnd = 0.dp, topStart = 10.dp, bottomEnd = 10.dp)
+            shape = RoundedCornerShape(topEnd = 0.dp, topStart = 10.dp, bottomEnd = 20.dp)
         ) {
             Text("Save Presets")
-            Icon(imageVector = Icons.Filled.Add, contentDescription = null)
+            Icon(imageVector = Icons.Filled.Edit, contentDescription = null)
         }
 
 
