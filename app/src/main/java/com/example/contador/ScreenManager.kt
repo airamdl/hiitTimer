@@ -263,19 +263,9 @@ fun Screen3(navController: NavController, start: String?, work: String?, rest: S
                 buttonInitOrPause = "Pausar"
                 if (setsRemaining > 0) {
                     counter = CounterDown(timeLeft) { remaining ->
-                        if (currentScreen == "work") {
                             workTime = remaining
-                        } else {
-                            restTime = remaining
-                        }
                     }
                     counter?.start()
-                    if (currentScreen == "work") {
-                        currentScreen = "work"
-
-
-                    }
-
                 }
             }else{
                 buttonInitOrPause = "Reanudar"
