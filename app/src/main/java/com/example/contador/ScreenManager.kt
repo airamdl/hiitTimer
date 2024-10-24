@@ -12,12 +12,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -54,42 +50,54 @@ fun HomeScreen(){
             Screen1(navController = navController)
         }
         composable(
-            route ="second_Screen/{start}",
+            route ="second_Screen/{start}/{work}/{rest}",
 
             ) {
                 backStackEntry ->
             val start= backStackEntry.arguments?.getString("start")
-            if (start!= null) {
-                Screen2(navController = navController, start)
-            }
-        }
-        composable(route ="third_Screen/{work}",
-
-            ) {
-                backStackEntry ->
             val work= backStackEntry.arguments?.getString("work")
-            if (work!= null) {
-                Screen3(navController = navController, work)
+            val rest= backStackEntry.arguments?.getString("rest")
+            if (start!= null && work!= null && rest != null) {
+                Screen2(navController = navController, start,work,rest)
             }
         }
-        composable(route ="fourth_Screen/{rest}",
+        composable(route ="third_Screen/{start}/{work}/{rest}",
 
             ) {
                 backStackEntry ->
+            val start= backStackEntry.arguments?.getString("start")
+            val work= backStackEntry.arguments?.getString("work")
             val rest= backStackEntry.arguments?.getString("rest")
-            if (rest!= null) {
-                Screen4(navController = navController, rest)
+            if (start!= null && work!= null && rest != null) {
+                Screen3(navController = navController, start, work, rest)
+            }
+        }
+        composable(route ="fourth_Screen/{start}/{work}/{rest}",
+
+            ) {
+                backStackEntry ->
+            val start= backStackEntry.arguments?.getString("start")
+            val work= backStackEntry.arguments?.getString("work")
+            val rest= backStackEntry.arguments?.getString("rest")
+            if (start!= null && work!= null && rest != null) {
+                Screen4(navController = navController, start, work, rest)
             }
         }
     }
 
 }
-
-
+fun checkSettings(set : Int, work : Int, rest : Int): Boolean {
+    if (set != 0 && work != 0 && rest != 0){
+        return true
+    }
+    return false
+}
+// Screen Settings
 @Composable
 fun Screen1(navController: NavController) {
+    // Defaults values
     var sets by rememberSaveable { mutableIntStateOf(4) }
-    var work by rememberSaveable { mutableIntStateOf(20) }
+    var work by rememberSaveable { mutableIntStateOf(5) }
     var rest by rememberSaveable { mutableIntStateOf(10) }
 
     Column(
@@ -126,42 +134,38 @@ fun Screen1(navController: NavController) {
 
         (Button(
             onClick = {
-                navController.navigate("second_Screen/{start}".replace(
-                    oldValue = "{start}",
-                    newValue = sets.toString()
-                ))
-            },
-            colors = ButtonDefaults.buttonColors(Color.Black),
-            shape = RoundedCornerShape(topEnd = 0.dp, topStart = 10.dp, bottomEnd = 20.dp)
-
-
+                if (checkSettings(sets,work,rest) == true) {
+                    navController.navigate(
+                        "second_Screen/{start}/{work}/{rest}".replace(
+                            oldValue = "{start}",
+                            newValue = sets.toString()
+                        ).replace(
+                            oldValue = "{work}",
+                            newValue = work.toString()
+                        ).replace(
+                            oldValue = "{rest}",
+                            newValue = rest.toString()
+                        )
+                    )
+                }
+            }
         ) {
             Text("Start Activity")
-
         })
-        Button(
-            onClick = {
-
-            },
-            colors = ButtonDefaults.buttonColors(Color.Black),
-            shape = RoundedCornerShape(topEnd = 0.dp, topStart = 10.dp, bottomEnd = 20.dp)
-        ) {
-            Text("Save Presets")
-            Icon(imageVector = Icons.Filled.Edit, contentDescription = null)
-        }
 
 
     }
 
 }
-
+//Screen 10 second
 @Composable
-fun Screen2(navController: NavController, start: String?) {
+fun Screen2(navController: NavController, start: String?, work: String?, rest: String?) {
     var prepareTime by remember { mutableStateOf(10L) }
-    var setsRemaining by remember { mutableStateOf(5) }
+    var sets by remember { mutableStateOf(start?.toInt() ?:0) }
+    var miConterDown by remember{ mutableStateOf(CounterDown(10, {newvalue -> prepareTime = newvalue}))}
 
     LaunchedEffect(Unit) {
-        setsRemaining = start?.toInt() ?:0
+        miConterDown.start()
     }
 
 
@@ -174,9 +178,8 @@ fun Screen2(navController: NavController, start: String?) {
             .fillMaxSize()
             .background(color = BackgroundScreen2)
             .padding(10.dp)
-
-    ) {
-        Text(text = "$setsRemaining Sets Restantes ", fontSize = 30.sp, fontStyle = FontStyle.Italic , fontWeight = FontWeight.SemiBold)
+    ){
+        Text(text = "$sets Sets Restantes ", fontSize = 30.sp, fontStyle = FontStyle.Italic , fontWeight = FontWeight.SemiBold)
         Spacer(modifier = Modifier.height(16.dp))
         Text("$prepareTime", fontSize = 30.sp, fontStyle = FontStyle.Italic, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(16.dp))
@@ -188,28 +191,42 @@ fun Screen2(navController: NavController, start: String?) {
 //            fontWeight = FontWeight.Bold
 //        ))
         if (prepareTime<=0) {
-            navController.navigate("third_Screen")
+            LaunchedEffect(Unit) {
+                navController.navigate("third_Screen/{start}/{work}/{rest}".replace(
+                    oldValue = "{start}",
+                    newValue = sets.toString()
+                ).replace(
+                    oldValue = "{work}",
+                    newValue = work.toString()
+                ).replace(
+                    oldValue = "{rest}",
+                    newValue = rest.toString()
+                ))
+            }
+            //miConterDown.cancel()
+
         }
     }
 
 }
 
 
-
+//Work's screen
 @Composable
-fun Screen3(navController: NavController, work: String?) {
-    var setsRemaining by remember { mutableStateOf(0) }
-    var workTime by remember { mutableStateOf(20L) }
-    var restTime by remember { mutableStateOf(0L) }
+fun Screen3(navController: NavController, start: String?, work: String?, rest: String?) {
+    var setsRemaining by remember { mutableStateOf(start?.toInt() ?:0) }
+    var workTime by remember { mutableStateOf(work?.toLong() ?:0) }
+    var restTime by remember { mutableStateOf(rest?.toLong() ?:0) }
     var counter by remember { mutableStateOf<CounterDown?>(null) }
     var currentScreen by remember { mutableStateOf("work") }
+    var buttonInitOrPause by remember { mutableStateOf("Pausar") }
     var workTimeSaved by remember { mutableStateOf(workTime) }
 
     LaunchedEffect(Unit) {
-        setsRemaining = work?.toInt() ?:0
-        workTime = work?.toLong() ?: 0
-        restTime = 10
+        setsRemaining = start?.toInt() ?:0
         workTimeSaved = workTime
+        counter = CounterDown(work?.toLong() ?: 10, { newvalue -> workTime = newvalue})
+        counter?.start()
     }
 
     Column(
@@ -227,34 +244,46 @@ fun Screen3(navController: NavController, work: String?) {
         Text(text = "Tiempo restante ", color = Color.Blue, fontSize = 20.sp)
         Text(text = "VAMOS TU PUEDES", color = TestScreen3, fontSize = 40.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace)
 
+        if (timeLeft<=0){
+            LaunchedEffect(Unit) {
+                navController.navigate("fourth_Screen/{start}/{work}/{rest}".replace(
+                    oldValue = "{start}",
+                    newValue = start.toString()
+                ).replace(
+                    oldValue = "{work}",
+                    newValue = work.toString()
+                ).replace(
+                    oldValue = "{rest}",
+                    newValue = rest.toString()
+                ))}
+        }
+
         Button(onClick = {
-            if (setsRemaining > 0) {
-                counter = CounterDown(timeLeft) { remaining ->
+            if (counter?.counterState == false){
+                buttonInitOrPause = "Pausar"
+                if (setsRemaining > 0) {
+                    counter = CounterDown(timeLeft) { remaining ->
+                        if (currentScreen == "work") {
+                            workTime = remaining
+                        } else {
+                            restTime = remaining
+                        }
+                    }
+                    counter?.start()
                     if (currentScreen == "work") {
-                        workTime = remaining
-                    } else {
-                        restTime = remaining
-                    }
-                }
-                counter?.start()
-                if (currentScreen == "work") {
-                    currentScreen = "work"
-                    if (timeLeft<=0){
-                        navController.navigate("fourth_Screen")
+                        currentScreen = "work"
+
+
                     }
 
                 }
-
+            }else{
+                buttonInitOrPause = "Reanudar"
+                counter?.cancel()
             }
-        }
-        ) {
-            Text("Iniciar Temporizador")
-        }
 
-        Button(onClick = {
-            counter?.cancel()
         }) {
-            Text("Pausar")
+            Text(text = buttonInitOrPause)
         }
 
         Button(onClick = {
@@ -267,15 +296,16 @@ fun Screen3(navController: NavController, work: String?) {
         }
     }
 }
+// Rest's screen
 @Composable
-fun Screen4(navController: NavController, rest: String) {
-    var restTime by remember { mutableStateOf(0L) }
-    var setsRemaining by remember { mutableStateOf(0) }
-
-LaunchedEffect(Unit) {
-    setsRemaining = rest?.toInt() ?: 0
-    restTime = restTime?.toLong() ?:0
-}
+fun Screen4(navController: NavController, start: String?, work: String?, rest: String?) {
+    var restTime by remember { mutableStateOf(rest?.toLong() ?: 0) }
+    var setsRemaining by remember { mutableStateOf(start?.toInt() ?: 0) }
+    var miConterDown by remember{ mutableStateOf(CounterDown(10, {newvalue -> restTime = newvalue}))}
+    LaunchedEffect(Unit) {
+        restTime = restTime?.toLong() ?:0
+        miConterDown.start()
+    }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -292,11 +322,25 @@ LaunchedEffect(Unit) {
 
 
 
-        if (setsRemaining<=0) {
+            if (setsRemaining<=0) {
+                LaunchedEffect(Unit) {
                 navController.navigate("first_Screen")
+                    }
             }else{
+                if (setsRemaining>0 && restTime<=0){
+                LaunchedEffect(Unit) {
                 setsRemaining -= 1
-                navController.navigate("second_Screen")
+                    navController.navigate("second_Screen/{start}/{work}/{rest}".replace(
+                        oldValue = "{start}",
+                        newValue = setsRemaining.toString()
+                    ).replace(
+                        oldValue = "{work}",
+                        newValue = work.toString()
+                    ).replace(
+                        oldValue = "{rest}",
+                        newValue = rest.toString()
+                    ))
+                              }}
             }
         }
 
@@ -341,7 +385,7 @@ fun TimeSection(
     }}
 
 class CounterDown(var segundos: Long, var loquehacealhacertick: (Long) -> Unit) {
-    private var counterState: Boolean = false
+    var counterState: Boolean = false
 
     private val myCounter = object : CountDownTimer((segundos * 1000L), 1000) {
         override fun onTick(millisUntilFinished: Long) {
