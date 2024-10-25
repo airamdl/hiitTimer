@@ -153,7 +153,7 @@ fun Screen1(navController: NavController) {
                     )
                 }
                 nplayer = MediaPlayer.create(myContext, R.raw.noti);
-                nplayer.start()
+//                nplayer.start()
             }
         ) {
             Text("Start Activity")
@@ -284,8 +284,10 @@ fun Screen3(navController: NavController, start: String?, work: String?, rest: S
 
         Button(onClick = {
             counter?.cancel()
-            workTime = workTimeSaved
-
+            counter?.counterState = false
+            buttonInitOrPause = "Pausar"
+            workTime = work?.toLong() ?: 60L
+            counter?.start()
 
         }) {
             Text("Reiniciar")
@@ -342,7 +344,7 @@ fun Screen4(navController: NavController, start: String?, work: String?, rest: S
 
     }
 
-
+// Timer settings's layout
 @Composable
 fun TimeSection(
     label : String,
