@@ -1,5 +1,6 @@
 package com.example.contador
 
+import android.media.MediaPlayer
 import android.os.CountDownTimer
 import android.util.Log
 import androidx.compose.foundation.background
@@ -12,14 +13,18 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -27,6 +32,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -38,10 +45,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.contador.ui.theme.*
-import android.media.MediaPlayer
-import androidx.compose.runtime.mutableLongStateOf
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.platform.LocalContext
 
 
 @Composable
@@ -64,7 +67,8 @@ fun HomeScreen(){
                 Screen2(navController = navController, start,work,rest)
             }
         }
-        composable(route ="third_Screen/{start}/{work}/{rest}",
+        composable(
+            route = "third_Screen/{start}/{work}/{rest}",
 
             ) {
                 backStackEntry ->
@@ -75,7 +79,8 @@ fun HomeScreen(){
                 Screen3(navController = navController, start, work, rest)
             }
         }
-        composable(route ="fourth_Screen/{start}/{work}/{rest}",
+        composable(
+            route = "fourth_Screen/{start}/{work}/{rest}",
 
             ) {
                 backStackEntry ->
@@ -96,11 +101,15 @@ fun checkSettings(set : Int, work : Int, rest : Int): Boolean {
 @Composable
 fun Screen1(navController: NavController) {
     // Defaults values
+    val myContext = LocalContext.current
+    var showDialog by remember {mutableStateOf(false)}
     var sets by rememberSaveable { mutableIntStateOf(4) }
     var work by rememberSaveable { mutableIntStateOf(5) }
     var rest by rememberSaveable { mutableIntStateOf(10) }
     var nplayer : MediaPlayer
-    val myContext = LocalContext.current
+    if(showDialog) {
+        AlertDialogExample({showDialog = false},{showDialog = false},"Guardar preajuste")
+    }
 
     Column(
         Modifier
@@ -156,22 +165,8 @@ fun Screen1(navController: NavController) {
         }
         Button(
             onClick = {
-                if (checkSettings(sets,work,rest)) {
-                    navController.navigate(
-                        "second_Screen/{start}/{work}/{rest}".replace(
-                            oldValue = "{start}",
-                            newValue = sets.toString()
-                        ).replace(
-                            oldValue = "{work}",
-                            newValue = work.toString()
-                        ).replace(
-                            oldValue = "{rest}",
-                            newValue = rest.toString()
-                        )
-                    )
-                }
-//                nplayer = MediaPlayer.create(myContext, R.raw.noti);
-//                nplayer.start()
+                showDialog = true
+
             }, shape = RectangleShape
         ) {
             Text("Guardar preajustes")
@@ -196,7 +191,7 @@ fun Screen2(navController: NavController, start: String?, work: String?, rest: S
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
-        modifier =Modifier
+        modifier = Modifier
             .fillMaxSize()
             .background(color = BackgroundScreen2)
             .padding(10.dp)
@@ -229,11 +224,11 @@ fun Screen2(navController: NavController, start: String?, work: String?, rest: S
 //Work's screen
 @Composable
 fun Screen3(navController: NavController, start: String?, work: String?, rest: String?) {
-    var setsRemaining by remember { mutableIntStateOf(start?.toInt() ?:0) }
+    val setsRemaining by remember { mutableIntStateOf(start?.toInt() ?:0) }
     var workTime by remember { mutableLongStateOf(work?.toLong() ?:0) }
-    var restTime by remember { mutableLongStateOf(rest?.toLong() ?:0) }
+    val restTime by remember { mutableLongStateOf(rest?.toLong() ?:0) }
     var counter by remember { mutableStateOf<CounterDown?>(null) }
-    var currentScreen by remember { mutableStateOf("work") }
+    val currentScreen by remember { mutableStateOf("work") }
     var buttonInitOrPause by remember { mutableStateOf("Pausar") }
     var workTimeSaved by remember { mutableLongStateOf(workTime) }
 
@@ -388,6 +383,49 @@ fun TimeSection(
         }
 
     }}
+
+@Composable
+fun AlertDialogExample(
+    onDismissRequest: () -> Unit,
+    onConfirmation: () -> Unit,
+    dialogTitle: String,
+) {
+    var text by remember { mutableStateOf("") }
+    AlertDialog(
+        title = {
+            Text(text = dialogTitle)
+        },
+        text = {
+            TextField(
+                value = text,
+                onValueChange = { text = it },
+                label = { Text("Nombre del preajuste") }
+            )
+        },
+        onDismissRequest = {
+            onDismissRequest()
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    onConfirmation()
+                }
+            ) {
+                Text("Guardar")
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = {
+                    onDismissRequest()
+                }
+            ) {
+                Text("Cancelar")
+            }
+        }
+
+    )
+}
 
 class CounterDown(var segundos: Long, var loquehacealhacertick: (Long) -> Unit) {
     var counterState: Boolean = false
