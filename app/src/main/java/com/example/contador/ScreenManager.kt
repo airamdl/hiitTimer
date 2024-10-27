@@ -39,8 +39,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.contador.ui.theme.*
 import android.media.MediaPlayer
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
-import java.time.format.TextStyle
 
 
 @Composable
@@ -89,10 +90,7 @@ fun HomeScreen(){
 
 }
 fun checkSettings(set : Int, work : Int, rest : Int): Boolean {
-    if (set != 0 && work != 0 && rest != 0){
-        return true
-    }
-    return false
+    return set != 0 && work != 0 && rest != 0
 }
 // Screen Settings
 @Composable
@@ -114,31 +112,29 @@ fun Screen1(navController: NavController) {
         verticalArrangement = Arrangement.Center
     ) {
         TimeSection(
-            label = "Sets",
+            label = "Intervalos",
             time = sets,
             onIncrease= {sets++},
             onDecrease = {if (sets>0)sets-- }
         )
         Spacer(modifier = Modifier.padding(10.dp))
         TimeSection(
-            label = "Work Time",
+            label = "Trabajo",
             time = work,
             onIncrease= {work++},
             onDecrease = {if (work>0)work-- }
         )
         Spacer(modifier = Modifier.padding(10.dp))
         TimeSection(
-            label = "Rest Time",
+            label = "Descanso",
             time = rest,
             onIncrease= {rest++},
             onDecrease = {if (rest>0)rest-- }
         )
         Spacer(modifier = Modifier.padding(30.dp))
-
-
-        (Button(
+        Button(
             onClick = {
-                if (checkSettings(sets,work,rest) == true) {
+                if (checkSettings(sets,work,rest)) {
                     navController.navigate(
                         "second_Screen/{start}/{work}/{rest}".replace(
                             oldValue = "{start}",
@@ -152,12 +148,34 @@ fun Screen1(navController: NavController) {
                         )
                     )
                 }
-                nplayer = MediaPlayer.create(myContext, R.raw.noti);
+//                nplayer = MediaPlayer.create(myContext, R.raw.noti);
 //                nplayer.start()
-            }
+            }, shape = RectangleShape
         ) {
-            Text("Start Activity")
-        })
+            Text("Empezar actividad")
+        }
+        Button(
+            onClick = {
+                if (checkSettings(sets,work,rest)) {
+                    navController.navigate(
+                        "second_Screen/{start}/{work}/{rest}".replace(
+                            oldValue = "{start}",
+                            newValue = sets.toString()
+                        ).replace(
+                            oldValue = "{work}",
+                            newValue = work.toString()
+                        ).replace(
+                            oldValue = "{rest}",
+                            newValue = rest.toString()
+                        )
+                    )
+                }
+//                nplayer = MediaPlayer.create(myContext, R.raw.noti);
+//                nplayer.start()
+            }, shape = RectangleShape
+        ) {
+            Text("Guardar preajustes")
+        }
 
 
     }
@@ -166,15 +184,13 @@ fun Screen1(navController: NavController) {
 //Screen 10 second
 @Composable
 fun Screen2(navController: NavController, start: String?, work: String?, rest: String?) {
-    var prepareTime by remember { mutableStateOf(10L) }
-    var sets by remember { mutableStateOf(start?.toInt() ?:0) }
-    var miConterDown by remember{ mutableStateOf(CounterDown(10, {newvalue -> prepareTime = newvalue}))}
+    var prepareTime by remember { mutableLongStateOf(10L) }
+    val sets by remember { mutableIntStateOf(start?.toInt() ?:0) }
+    val miConterDown by remember{ mutableStateOf(CounterDown(10, {newvalue -> prepareTime = newvalue}))}
 
     LaunchedEffect(Unit) {
         miConterDown.start()
     }
-
-
 
 
     Column(
@@ -190,12 +206,6 @@ fun Screen2(navController: NavController, start: String?, work: String?, rest: S
         Text("$prepareTime", fontSize = 30.sp, fontStyle = FontStyle.Italic, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(16.dp))
         Text(text = "¡¡PREPÁRATE!!", color = TextScreen2, fontWeight = FontWeight.Bold, fontSize = 45.sp, textDecoration = TextDecoration.Underline, fontStyle = FontStyle.Italic, fontFamily = FontFamily.Monospace)
-//        Text(text = "hola", textStyle = MaterialTheme.typography.bodyMedium.copy(
-//            fontSize = 16.sp,
-//            lineHeight = 24.sp,
-//            color =  Color.Black,
-//            fontWeight = FontWeight.Bold
-//        ))
         if (prepareTime<=0) {
             LaunchedEffect(Unit) {
                 navController.navigate("third_Screen/{start}/{work}/{rest}".replace(
@@ -210,7 +220,6 @@ fun Screen2(navController: NavController, start: String?, work: String?, rest: S
                 ))
             }
             //miConterDown.cancel()
-
         }
     }
 
@@ -220,16 +229,15 @@ fun Screen2(navController: NavController, start: String?, work: String?, rest: S
 //Work's screen
 @Composable
 fun Screen3(navController: NavController, start: String?, work: String?, rest: String?) {
-    var setsRemaining by remember { mutableStateOf(start?.toInt() ?:0) }
-    var workTime by remember { mutableStateOf(work?.toLong() ?:0) }
-    var restTime by remember { mutableStateOf(rest?.toLong() ?:0) }
+    var setsRemaining by remember { mutableIntStateOf(start?.toInt() ?:0) }
+    var workTime by remember { mutableLongStateOf(work?.toLong() ?:0) }
+    var restTime by remember { mutableLongStateOf(rest?.toLong() ?:0) }
     var counter by remember { mutableStateOf<CounterDown?>(null) }
     var currentScreen by remember { mutableStateOf("work") }
     var buttonInitOrPause by remember { mutableStateOf("Pausar") }
-    var workTimeSaved by remember { mutableStateOf(workTime) }
+    var workTimeSaved by remember { mutableLongStateOf(workTime) }
 
     LaunchedEffect(Unit) {
-        setsRemaining = start?.toInt() ?:0
         workTimeSaved = workTime
         counter = CounterDown(work?.toLong() ?: 10, { newvalue -> workTime = newvalue})
         counter?.start()
@@ -297,11 +305,10 @@ fun Screen3(navController: NavController, start: String?, work: String?, rest: S
 // Rest's screen
 @Composable
 fun Screen4(navController: NavController, start: String?, work: String?, rest: String?) {
-    var restTime by remember { mutableStateOf(rest?.toLong() ?: 0) }
-    var setsRemaining by remember { mutableStateOf(start?.toInt() ?: 0) }
-    var miConterDown by remember{ mutableStateOf(CounterDown(10, {newvalue -> restTime = newvalue}))}
+    var restTime by remember { mutableLongStateOf(rest?.toLong() ?: 0) }
+    var setsRemaining by remember { mutableIntStateOf(start?.toInt() ?: 0) }
+    val miConterDown by remember{ mutableStateOf(CounterDown(10, {newvalue -> restTime = newvalue}))}
     LaunchedEffect(Unit) {
-        restTime = restTime?.toLong() ?:0
         miConterDown.start()
     }
 
@@ -327,7 +334,7 @@ fun Screen4(navController: NavController, start: String?, work: String?, rest: S
             }else{
                 if (setsRemaining>0 && restTime<=0){
                 LaunchedEffect(Unit) {
-                setsRemaining -= 1
+                    setsRemaining -= 1
                     navController.navigate("second_Screen/{start}/{work}/{rest}".replace(
                         oldValue = "{start}",
                         newValue = setsRemaining.toString()
