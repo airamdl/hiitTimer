@@ -45,8 +45,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.contador.ui.theme.*
+import com.google.gson.Gson
 
-
+var textFieldGlobal : String = ""
 @Composable
 fun HomeScreen(){
     val navController = rememberNavController()
@@ -94,9 +95,11 @@ fun HomeScreen(){
     }
 
 }
+
 fun checkSettings(set : Int, work : Int, rest : Int): Boolean {
     return set != 0 && work != 0 && rest != 0
 }
+
 // Screen Settings
 @Composable
 fun Screen1(navController: NavController) {
@@ -107,8 +110,13 @@ fun Screen1(navController: NavController) {
     var work by rememberSaveable { mutableIntStateOf(5) }
     var rest by rememberSaveable { mutableIntStateOf(10) }
     var nplayer : MediaPlayer
+    var multiList: Array<Array<*>> =arrayOf()
     if(showDialog) {
-        AlertDialogExample({showDialog = false},{showDialog = false},"Guardar preajuste")
+        AlertDialogExample(
+            {showDialog = false},
+            {showDialog = false},
+            "Guardar preajuste")
+
     }
 
     Column(
@@ -165,7 +173,17 @@ fun Screen1(navController: NavController) {
         }
         Button(
             onClick = {
+
+
+
+
                 showDialog = true
+                if (textFieldGlobal.isNotEmpty()){
+                    multiList += arrayOf(textFieldGlobal, sets, work, rest)
+                    var test = Gson().toJson(multiList)
+                    Log.i("Dam2",test)
+                }
+
 
             }, shape = RectangleShape
         ) {
@@ -384,14 +402,17 @@ fun TimeSection(
 
     }}
 
+
 @Composable
 fun AlertDialogExample(
     onDismissRequest: () -> Unit,
     onConfirmation: () -> Unit,
     dialogTitle: String,
 ) {
+    fun getTextField(textInput: String): String {
+        return textInput
+    }
     var textInput by remember { mutableStateOf("") }
-    var isError = false
     AlertDialog(
         title = {
             Text(text = dialogTitle)
@@ -411,8 +432,11 @@ fun AlertDialogExample(
             TextButton(
                 onClick = {
                     if (textInput.isNotEmpty()) {
+                        textFieldGlobal = getTextField(textInput)
                         onConfirmation()
                     }
+
+
 
                 }
             ) {
@@ -431,6 +455,8 @@ fun AlertDialogExample(
 
     )
 }
+
+
 
 class CounterDown(var segundos: Long, var loquehacealhacertick: (Long) -> Unit) {
     var counterState: Boolean = false
