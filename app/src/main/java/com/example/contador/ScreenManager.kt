@@ -390,16 +390,18 @@ fun AlertDialogExample(
     onConfirmation: () -> Unit,
     dialogTitle: String,
 ) {
-    var text by remember { mutableStateOf("") }
+    var textInput by remember { mutableStateOf("") }
+    var isError = false
     AlertDialog(
         title = {
             Text(text = dialogTitle)
         },
         text = {
             TextField(
-                value = text,
-                onValueChange = { text = it },
-                label = { Text("Nombre del preajuste") }
+                value = textInput,
+                onValueChange = { textInput = it },
+                label = { Text("Nombre del preajuste") },
+                isError = textInput.isEmpty()
             )
         },
         onDismissRequest = {
@@ -408,7 +410,10 @@ fun AlertDialogExample(
         confirmButton = {
             TextButton(
                 onClick = {
-                    onConfirmation()
+                    if (textInput.isNotEmpty()) {
+                        onConfirmation()
+                    }
+
                 }
             ) {
                 Text("Guardar")
