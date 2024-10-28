@@ -105,11 +105,12 @@ fun checkSettings(set : Int, work : Int, rest : Int): Boolean {
 fun Screen1(navController: NavController) {
     // Defaults values
     val myContext = LocalContext.current
+    var nplayer : MediaPlayer
     var showDialog by remember {mutableStateOf(false)}
     var sets by rememberSaveable { mutableIntStateOf(4) }
     var work by rememberSaveable { mutableIntStateOf(5) }
     var rest by rememberSaveable { mutableIntStateOf(10) }
-    var nplayer : MediaPlayer
+
     var multiList: Array<Array<*>> =arrayOf()
     if(showDialog) {
         AlertDialogExample(
@@ -165,8 +166,8 @@ fun Screen1(navController: NavController) {
                         )
                     )
                 }
-//                nplayer = MediaPlayer.create(myContext, R.raw.noti);
-//                nplayer.start()
+                nplayer = MediaPlayer.create(myContext, R.raw.bladerunner_notification_sound);
+                nplayer.start()
             }, shape = RectangleShape
         ) {
             Text("Empezar actividad")
@@ -197,6 +198,8 @@ fun Screen1(navController: NavController) {
 //Screen 10 second
 @Composable
 fun Screen2(navController: NavController, start: String?, work: String?, rest: String?) {
+    val myContext = LocalContext.current
+    var nplayer : MediaPlayer
     var prepareTime by remember { mutableLongStateOf(10L) }
     val sets by remember { mutableIntStateOf(start?.toInt() ?:0) }
     val miConterDown by remember{ mutableStateOf(CounterDown(10, {newvalue -> prepareTime = newvalue}))}
@@ -221,6 +224,8 @@ fun Screen2(navController: NavController, start: String?, work: String?, rest: S
         Text(text = "¡¡PREPÁRATE!!", color = TextScreen2, fontWeight = FontWeight.Bold, fontSize = 45.sp, textDecoration = TextDecoration.Underline, fontStyle = FontStyle.Italic, fontFamily = FontFamily.Monospace)
         if (prepareTime<=0) {
             LaunchedEffect(Unit) {
+                nplayer = MediaPlayer.create(myContext, R.raw.bladerunner_notification_sound);
+                nplayer.start()
                 navController.navigate("third_Screen/{start}/{work}/{rest}".replace(
                     oldValue = "{start}",
                     newValue = sets.toString()
@@ -242,6 +247,8 @@ fun Screen2(navController: NavController, start: String?, work: String?, rest: S
 //Work's screen
 @Composable
 fun Screen3(navController: NavController, start: String?, work: String?, rest: String?) {
+    val myContext = LocalContext.current
+    var nplayer : MediaPlayer
     val setsRemaining by remember { mutableIntStateOf(start?.toInt() ?:0) }
     var workTime by remember { mutableLongStateOf(work?.toLong() ?:0) }
     val restTime by remember { mutableLongStateOf(rest?.toLong() ?:0) }
@@ -272,6 +279,8 @@ fun Screen3(navController: NavController, start: String?, work: String?, rest: S
 
         if (timeLeft<=0){
             LaunchedEffect(Unit) {
+                nplayer = MediaPlayer.create(myContext, R.raw.noti1);
+                nplayer.start()
                 navController.navigate("fourth_Screen/{start}/{work}/{rest}".replace(
                     oldValue = "{start}",
                     newValue = start.toString()
@@ -287,6 +296,8 @@ fun Screen3(navController: NavController, start: String?, work: String?, rest: S
         Button(onClick = {
             if (counter?.counterState == false){
                 buttonInitOrPause = "Pausar"
+                nplayer = MediaPlayer.create(myContext, R.raw.noti);
+                nplayer.start()
                 if (setsRemaining > 0) {
                     counter = CounterDown(timeLeft) { remaining ->
                             workTime = remaining
@@ -295,6 +306,8 @@ fun Screen3(navController: NavController, start: String?, work: String?, rest: S
                 }
             }else{
                 buttonInitOrPause = "Reanudar"
+                nplayer = MediaPlayer.create(myContext, R.raw.noti);
+                nplayer.start()
                 counter?.cancel()
             }
 
@@ -307,6 +320,8 @@ fun Screen3(navController: NavController, start: String?, work: String?, rest: S
             counter?.counterState = false
             buttonInitOrPause = "Pausar"
             workTime = work?.toLong() ?: 60L
+            nplayer = MediaPlayer.create(myContext, R.raw.noti);
+            nplayer.start()
             counter?.start()
 
         }) {
@@ -317,6 +332,8 @@ fun Screen3(navController: NavController, start: String?, work: String?, rest: S
 // Rest's screen
 @Composable
 fun Screen4(navController: NavController, start: String?, work: String?, rest: String?) {
+    val myContext = LocalContext.current
+    var nplayer : MediaPlayer
     var restTime by remember { mutableLongStateOf(rest?.toLong() ?: 0) }
     var setsRemaining by remember { mutableIntStateOf(start?.toInt() ?: 0) }
     val miConterDown by remember{ mutableStateOf(CounterDown(10, {newvalue -> restTime = newvalue}))}
@@ -341,12 +358,16 @@ fun Screen4(navController: NavController, start: String?, work: String?, rest: S
 
             if (setsRemaining<=0) {
                 LaunchedEffect(Unit) {
+                    nplayer = MediaPlayer.create(myContext, R.raw.finish);
+                    nplayer.start()
                 navController.navigate("first_Screen")
                     }
             }else{
                 if (setsRemaining>0 && restTime<=0){
                 LaunchedEffect(Unit) {
                     setsRemaining -= 1
+                    nplayer = MediaPlayer.create(myContext, R.raw.positive_notification_new_level);
+                    nplayer.start()
                     navController.navigate("second_Screen/{start}/{work}/{rest}".replace(
                         oldValue = "{start}",
                         newValue = setsRemaining.toString()
