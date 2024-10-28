@@ -181,6 +181,7 @@ fun Screen1(navController: NavController) {
                 if (textFieldGlobal.isNotEmpty()){
                     multiList += arrayOf(textFieldGlobal, sets, work, rest)
                     var test = Gson().toJson(multiList)
+                    PreferencesManager.saveData()
                     Log.i("Dam2",test)
                 }
 
