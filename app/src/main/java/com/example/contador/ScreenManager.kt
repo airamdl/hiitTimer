@@ -268,7 +268,6 @@ fun Screen3(navController: NavController, start: String?, work: String?, rest: S
         Spacer(modifier = Modifier.height(16.dp))
         Text(text = "$timeLeft",  fontSize = 30.sp)
         Spacer(modifier = Modifier.height(16.dp))
-        Text(text = "Tiempo restante ", color = Color.Blue, fontSize = 20.sp)
         Text(text = "¡VAMOS TÚ PUEDES!", color = TestScreen3, fontSize = 40.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace)
 
         if (timeLeft<=0){
