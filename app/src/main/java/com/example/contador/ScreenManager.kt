@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -168,15 +169,12 @@ fun Screen1(navController: NavController) {
                 }
                 nplayer = MediaPlayer.create(myContext, R.raw.bladerunner_notification_sound);
                 nplayer.start()
-            }, shape = RectangleShape
+            },colors = ButtonDefaults.buttonColors(Color.DarkGray), shape = RectangleShape, modifier = Modifier.fillMaxWidth()
         ) {
             Text("Empezar actividad")
         }
         Button(
             onClick = {
-
-
-
 
                 showDialog = true
                 if (textFieldGlobal.isNotEmpty()){
@@ -186,7 +184,7 @@ fun Screen1(navController: NavController) {
                 }
 
 
-            }, shape = RectangleShape
+            },colors = ButtonDefaults.buttonColors(Color.DarkGray), shape = RectangleShape, modifier = Modifier.fillMaxWidth()
         ) {
             Text("Guardar preajustes")
         }
